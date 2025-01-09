@@ -1,10 +1,11 @@
 import React from 'react';
+import {SideBarAdm,MainContentsAdm}  from '../Admin/index'
 
 const Admin = () => {
     return (
-        <div>
-            <h1>Trang Quản Trị</h1>
-            {/* Nội dung của trang quản trị */}
+        <div className='flex h-screen'>
+            <SideBarAdm/>
+            <MainContentsAdm/>
         </div>
     );
 };
