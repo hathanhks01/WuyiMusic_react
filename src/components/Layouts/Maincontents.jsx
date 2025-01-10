@@ -8,7 +8,7 @@ import Discover from '../pages/User/discover';
 
 const MainContent = () => {
     return (
-        <div className="main-content fixed pt-3 top-16 bottom-16 right-0 w-4/5 h-full bg-[#111727] border-double border-2 border-red-500 overflow-y-auto text-white">
+        <div className="main-content fixed pt-3 top-16 bottom-16 right-0 w-4/5 h-full bg-[#111727]  overflow-y-auto text-white">
             <Routes>
             <Route path="/" element={<Discover />} /> {/* Trang khởi đầu là Discover */}
                 <Route path="/Discover" element={<Discover />} />

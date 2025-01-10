@@ -1,9 +1,8 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-
 const SideBarAdm = () => {
   return (
-    <div className='w-1/5 left-0 flex flex-col h-screen p-0 m-0 border-2 border-red-100 bg-[#111727] text-white'>
+    <div className='w-1/5 left-0 flex flex-col h-screen p-0 m-0  bg-[#111a31] text-white'>
         <div className='pl-18 pt-2 flex justify-center'>
             <Link to="/admin" className="text-[30px] text-red-700 font-bold">
                 WuyiMusic
@@ -18,7 +17,7 @@ const SideBarAdm = () => {
                             `block p-2 ${isActive ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/20 hover:text-white'}`
                         }
                     >
-                        DashBroard
+                        DashBroard 
                     </NavLink>
                 </li>
                 <li className="mb-2">
