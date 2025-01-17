@@ -18,7 +18,7 @@ function App() {
             <div className="bg-[rgba(105,105,170,0.1)] min-h-screen">
               <Header />
               <Sidebar />
-              <Main /> 
+              <Main />
               <Footer />
             </div>
           }
@@ -26,7 +26,6 @@ function App() {
 
         {/* Layout dành cho admin */}
         <Route path="/admin/*" element={<AdminLayout />}>
-          
         </Route>
       </Routes>
     </Router>
