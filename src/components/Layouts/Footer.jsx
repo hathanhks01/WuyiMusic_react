@@ -1,21 +1,137 @@
-import React from 'react'
-import MusicPlayer from '../pages/User/MusicPlayer';
+import React, { useState, useEffect } from 'react';
+import { HeartOutlined, HeartFilled, PlayCircleOutlined, PauseCircleOutlined, StepBackwardOutlined, StepForwardOutlined } from '@ant-design/icons';
+import { useMusic } from '../pages/PlayerMusicControl/MusicContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faVolumeOff, faVolumeHigh, faMusic, faList } from '@fortawesome/free-solid-svg-icons';
+
 const Footer = () => {
+  const { 
+    currentTrack, 
+    isPlaying, 
+    playPause, 
+    seekTo, 
+    setVolumeLevel,
+    currentTime,
+    duration,
+    volume
+  } = useMusic();
+  
+  const [isLiked, setIsLiked] = useState(false);
+
+  // Format time helper function
+  const formatTime = (time) => {
+    if (!time || isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  // Handle time seek
+  const handleTimeSeek = (event) => {
+    const newTime = (event.target.value / 100) * duration;
+    seekTo(newTime);
+  };
+
+  // Handle volume change
+  const handleVolumeChange = (event) => {
+    const newVolume = parseInt(event.target.value);
+    setVolumeLevel(newVolume);
+  };
+
+  const handleLikeToggle = () => {
+    setIsLiked(!isLiked);
+  };
+
   return (
-    <div className='w-full h-16 border-4 border-green-400 bg-gray-800 text-white  text-center fixed bottom-0'>
-    <div className="flex w-full h-full">
-      <div className="flex-1 border-4 border-red-500 flex items-center justify-center"> {/* Phần 1 */}
-        Section 1
-      </div>
-      <div className="flex-1 border-4 border-yellow-500 flex items-center justify-center"> {/* Phần 2 */}
-        Section 2
-      </div>
-      <div className="flex-1 flex items-center justify-center"> {/* Phần 3 */}
-        Section 3
+    <div className='w-full h-24 bg-black text-white text-center fixed bottom-0'>
+      <div className="flex w-full h-full">
+        {/* Track Info Section */}
+        <div className="flex-1 flex items-center justify-start">
+          <div className="w-12 h-12 m-4 overflow-hidden flex items-center">
+            <img 
+              src={currentTrack?.trackImage || "src/assets/image/miaomiao.jpg"} 
+              alt={currentTrack?.title || ""} 
+              className='w-full h-full object-cover' 
+            />
+          </div>
+          <div className="flex flex-col">
+            <span>{currentTrack?.title || " "}</span>
+            <span className='text-xs text-white/80'>{currentTrack?.artist || ""}</span>
+          </div>
+          <button
+            onClick={handleLikeToggle}
+            className={`p-4 rounded ${isLiked ? 'text-red-500' : 'text-white'}`}
+            title={isLiked ? 'Xóa khỏi thư viện' : 'Thêm vào thư viện'}
+          >
+            {isLiked ? <HeartFilled /> : <HeartOutlined />}
+          </button>
+        </div>
+
+        {/* Playback Controls Section */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className='w-full'>
+            <div className="flex justify-center items-center space-x-4">
+              <button className="text-2xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform">
+                <StepBackwardOutlined />
+              </button>
+              <button 
+                onClick={playPause} 
+                className="text-4xl p-0 hover:scale-105 transition-transform"
+              >
+                {isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+              </button>
+              <button className="text-2xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform">
+                <StepForwardOutlined />
+              </button>
+            </div>
+            
+            {/* Time Progress Bar */}
+            <div className="flex items-center w-full px-2">
+              <span className='p-1'>{formatTime(currentTime)}</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={(currentTime / (duration || 1)) * 100}
+                onChange={handleTimeSeek}
+                className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, white ${(currentTime / (duration || 1)) * 100}%, gray ${(currentTime / (duration || 1)) * 100}%)`,
+                }}
+              />
+              <span className='p-1'>{formatTime(duration)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Volume Controls Section */}
+        <div className="flex-1 flex items-center justify-end pr-7 space-x-4">
+          <div className="flex items-center">
+            <span className="text-xs mr-2 p-4">
+              <FontAwesomeIcon icon={volume === 0 ? faVolumeOff : faVolumeHigh} />
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={handleVolumeChange}
+              className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, white ${volume}%, gray ${volume}%)`,
+              }}
+            />
+          </div>
+          <button className='border-l border-l-white/50 pl-2 text-white/50 hover:text-white'>
+            <FontAwesomeIcon icon={faMusic} />
+          </button>
+          <button className='text-white/50 hover:text-white'>
+            <FontAwesomeIcon icon={faList} />
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
-}
+  );
+};
 
-export default Footer
+export default Footer;

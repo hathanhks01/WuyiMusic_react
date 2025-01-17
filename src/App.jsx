@@ -5,30 +5,33 @@ import Sidebar from './components/Layouts/Sidebar';
 import Footer from './components/Layouts/Footer';
 import Main from './components/Layouts/Maincontents'; // Router của khách
 import AdminLayout from './components/pages/Admin/Admin'; // Layout admin
+import { MusicProvider } from './components/pages/PlayerMusicControl/MusicContext'; // Điều chỉnh đường dẫn nếu cần
 
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Layout dành cho khách */}
-        <Route
-          path="/*"
-          element={
-            <div className="bg-[rgba(105,105,170,0.1)] min-h-screen">
-              <Header />
-              <Sidebar />
-              <Main />
-              <Footer />
-            </div>
-          }
-        />
+    <MusicProvider>
+      <Router>
+        <Routes>
+          {/* Layout dành cho khách */}
+          <Route
+            path="/*"
+            element={
+              <div className="bg-[rgba(105,105,170,0.1)] min-h-screen">
+                <Header />
+                <Sidebar />
+                <Main />
+                <Footer />
+              </div>
+            }
+          />
+          {/* Layout dành cho admin */}
+          <Route path="/admin/*" element={<AdminLayout />}>
 
-        {/* Layout dành cho admin */}
-        <Route path="/admin/*" element={<AdminLayout />}>
-        </Route>
-      </Routes>
-    </Router>
+          </Route>
+        </Routes>
+      </Router>
+    </MusicProvider>
   );
 }
 
