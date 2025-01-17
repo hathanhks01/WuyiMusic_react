@@ -30,8 +30,7 @@ const Discover = () => {
     }, []);
 
     return (
-        <div className="min-h-screen mt-6 bg-[#111727]">
-            <Banner/>
+        <div className="min-h-screen mt-6 bg-[#111727]">    
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center mb-4">
                     <span className="text-white font-semibold">Gợi ý cho bạn</span>

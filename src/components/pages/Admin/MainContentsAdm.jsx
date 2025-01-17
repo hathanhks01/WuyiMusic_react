@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
 
-const MainContentsAdm = () => {
+const MainContentsAdm = ({ children }) => {
   return (
-    <div className='w-4/5 right-0 flex h-screen  bg-[#111727] text-white'>
-        main contents
+    <div className='w-4/5 right-0 flex h-screen bg-[#111727] text-white'>
+        {children}
     </div>
-  )
+  );
 }
 
-export default MainContentsAdm
+export default MainContentsAdm;
