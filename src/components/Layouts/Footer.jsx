@@ -3,7 +3,7 @@ import { HeartOutlined, HeartFilled, PlayCircleOutlined, PauseCircleOutlined, St
 import { useMusic } from '../pages/PlayerMusicControl/MusicContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeOff, faVolumeHigh, faMusic, faList } from '@fortawesome/free-solid-svg-icons';
-
+import QueueSidebar from '../pages/User/QueueSidebar';
 const Footer = () => {
   const { 
     currentTrack, 
@@ -13,7 +13,9 @@ const Footer = () => {
     setVolumeLevel,
     currentTime,
     duration,
-    volume
+    volume,
+    isQueueVisible,
+    toggleQueueVisibility
   } = useMusic();
   
   const [isLiked, setIsLiked] = useState(false);
@@ -125,11 +127,15 @@ const Footer = () => {
           <button className='border-l border-l-white/50 pl-2 text-white/50 hover:text-white'>
             <FontAwesomeIcon icon={faMusic} />
           </button>
-          <button className='text-white/50 hover:text-white'>
+          <button 
+            onClick={toggleQueueVisibility}
+            className={`text-white/50 hover:text-white ${isQueueVisible ? 'text-white' : ''}`}
+          >
             <FontAwesomeIcon icon={faList} />
           </button>
         </div>
       </div>
+      <QueueSidebar isOpen={isQueueVisible} onClose={toggleQueueVisibility} />
     </div>
   );
 };

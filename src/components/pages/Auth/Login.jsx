@@ -2,21 +2,22 @@ import React, { useState } from 'react';
 import authService from '../../../Services/AuthServices';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ setIsModalOpen }) => {
+const Login = ({ setIsModalOpen, onLoginSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
     try {
       const response = await authService.login(username, password);
       if (response.token) {
-        // Đóng modal sau khi đăng nhập thành công
+        const userInfo = JSON.parse(localStorage.getItem('user'));
+        onLoginSuccess(userInfo);
         setIsModalOpen(false);
         navigate('/discover');
       }

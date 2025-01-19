@@ -3,7 +3,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Discover from '../pages/User/discover';
-
+import LikedList from '../pages/User/LikedList';
 // Thêm các route khác vào đây...
 
 const MainContent = () => {
@@ -12,7 +12,7 @@ const MainContent = () => {
             <Routes>
             <Route path="/" element={<Discover />} /> {/* Trang khởi đầu là Discover */}
                 <Route path="/Discover" element={<Discover />} />
-                
+                <Route path="/Favorites" element={<LikedList />} />
             </Routes>
             <style>
                 {`

@@ -1,13 +1,31 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "antd";
 import { UserOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
-import Login from '../pages/Auth/Login';  // Import Component Login
+import Login from '../pages/Auth/Login';  
 
 const Header = ({ onSearch }) => {
   const [search, setSearch] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);  // State điều khiển modal login
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Kiểm tra thông tin người dùng trong localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+  const handleLoginSuccess = (userInfo) => {
+    setUser(userInfo); // Cập nhật trạng thái người dùng
+    setIsModalOpen(false); // Đóng modal sau khi đăng nhập
+  };
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,15 +57,29 @@ const Header = ({ onSearch }) => {
           For Artist
         </a>
         <div className="actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Button
-            className="hover:text-red-700 text-white font-bold"
-            type="link"
-            icon={<UserOutlined />}
-            style={{ fontSize: '16px' }}
-            onClick={() => setIsModalOpen(true)}  // Mở modal khi nhấn vào Đăng nhập
-          >
-            Đăng nhập
-          </Button>
+          {user ? (
+            // Hiển thị tên người dùng khi đã đăng nhập
+            <>
+              <span className="text-white">Xin chào, {user.username}</span>
+              <Button
+                className="hover:text-red-700 text-white font-bold"
+                type="link"
+                onClick={handleLogout}
+              >
+                Đăng xuất
+              </Button>
+            </>
+          ) : (
+            // Hiển thị nút Đăng nhập khi chưa đăng nhập
+            <Button
+              className="hover:text-red-700 text-white font-bold"
+              type="link"
+              icon={<UserOutlined />}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Đăng nhập
+            </Button>
+          )}
         </div>
       </div>
 
@@ -55,7 +87,12 @@ const Header = ({ onSearch }) => {
       {isModalOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
           <div className="relative z-10 bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            <Login setIsModalOpen={setIsModalOpen} />  {/* Pass close function to Login */}
+          <Login 
+  setIsModalOpen={setIsModalOpen} 
+  onLoginSuccess={handleLoginSuccess} 
+/>
+
+            
           </div>
         </div>
       )}
