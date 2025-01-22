@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { HeartOutlined, HeartFilled, PlayCircleOutlined, PauseCircleOutlined, StepBackwardOutlined, StepForwardOutlined } from '@ant-design/icons';
 import { useMusic } from '../pages/PlayerMusicControl/MusicContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeOff, faVolumeHigh, faMusic, faList } from '@fortawesome/free-solid-svg-icons';
 import QueueSidebar from '../pages/User/QueueSidebar';
 const Footer = () => {
-  const { 
-    currentTrack, 
-    isPlaying, 
-    playPause, 
-    seekTo, 
+  const {
+    currentTrack,
+    previousTrack,
+    nextTrack,
+    isPlaying,
+    playPause,
+    seekTo,
     setVolumeLevel,
     currentTime,
     duration,
@@ -17,7 +20,7 @@ const Footer = () => {
     isQueueVisible,
     toggleQueueVisibility
   } = useMusic();
-  
+
   const [isLiked, setIsLiked] = useState(false);
 
   // Format time helper function
@@ -39,10 +42,40 @@ const Footer = () => {
     const newVolume = parseInt(event.target.value);
     setVolumeLevel(newVolume);
   };
-
-  const handleLikeToggle = () => {
-    setIsLiked(!isLiked);
+  const userId = JSON.parse(localStorage.getItem('user')).userId;
+  const handleLikeToggle = async () => {
+    const trackId = currentTrack.trackId; // Giả sử trackId có trong currentTrack
+    try {
+      if (isLiked) {
+        // Gọi API xóa bài hát yêu thích
+        const response = await axios.delete(`https://localhost:7078/api/FavoriteTracks/remove?userId=${userId}&trackId=${trackId}`, {
+          data: { userId, trackId }
+        });
+        console.log(response.data.message);
+      } else {
+        // Gọi API thêm bài hát yêu thích
+        const response = await axios.post(`https://localhost:7078/api/FavoriteTracks/add?userId=${userId}&trackId=${trackId}`);
+        console.log(response.data.message);
+      }
+      setIsLiked(!isLiked); // Chuyển đổi trạng thái yêu thích
+    } catch (error) {
+      console.error("Error updating favorite track:", error);
+    }
   };
+  useEffect(() => {
+    const checkIfTrackFavorited = async () => {
+      if (currentTrack) {
+        try {
+          const response = await axios.get(`https://localhost:7078/api/FavoriteTracks/is-favorited?userId=${userId}&trackId=${currentTrack.trackId}`);
+          setIsLiked(response.data.isFavorited);
+        } catch (error) {
+          console.error("Error checking if track is favorited:", error);
+        }
+      }
+    };
+
+    checkIfTrackFavorited();
+  }, [currentTrack, userId]); 
 
   return (
     <div className='w-full h-24 bg-black text-white text-center fixed bottom-0'>
@@ -50,10 +83,10 @@ const Footer = () => {
         {/* Track Info Section */}
         <div className="flex-1 flex items-center justify-start">
           <div className="w-12 h-12 m-4 overflow-hidden flex items-center">
-            <img 
-              src={currentTrack?.trackImage || "src/assets/image/miaomiao.jpg"} 
-              alt={currentTrack?.title || ""} 
-              className='w-full h-full object-cover' 
+            <img
+              src={currentTrack?.trackImage || "src/assets/image/miaomiao.jpg"}
+              alt={currentTrack?.title || ""}
+              className='w-full h-full object-cover'
             />
           </div>
           <div className="flex flex-col">
@@ -73,20 +106,24 @@ const Footer = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className='w-full'>
             <div className="flex justify-center items-center space-x-4">
-              <button className="text-2xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform">
+              <button
+                onClick={previousTrack}
+                className="text-2xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform">
                 <StepBackwardOutlined />
               </button>
-              <button 
-                onClick={playPause} 
+              <button
+                onClick={playPause}
                 className="text-4xl p-0 hover:scale-105 transition-transform"
               >
                 {isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
               </button>
-              <button className="text-2xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform">
+              <button
+                onClick={nextTrack}
+                className="text-2xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform">
                 <StepForwardOutlined />
               </button>
             </div>
-            
+
             {/* Time Progress Bar */}
             <div className="flex items-center w-full px-2">
               <span className='p-1'>{formatTime(currentTime)}</span>
@@ -127,7 +164,7 @@ const Footer = () => {
           <button className='border-l border-l-white/50 pl-2 text-white/50 hover:text-white'>
             <FontAwesomeIcon icon={faMusic} />
           </button>
-          <button 
+          <button
             onClick={toggleQueueVisibility}
             className={`text-white/50 hover:text-white ${isQueueVisible ? 'text-white' : ''}`}
           >

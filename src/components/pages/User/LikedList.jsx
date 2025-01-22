@@ -8,6 +8,9 @@ const LikedList = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { currentTrack, playTrack, isPlaying, playPause } = useMusic();
+  
+  const [clickCount, setClickCount] = useState(0);
+  const [clickTimer, setClickTimer] = useState(null);
 
   useEffect(() => {
     const fetchLikedTracks = async () => {
@@ -21,7 +24,11 @@ const LikedList = ({ userId }) => {
           throw new Error('Dữ liệu không hợp lệ');
         }
       } catch (err) {
-        setError(err);
+        if (err.response && err.response.status === 404) {
+          setLikedTracks([]); // Set list to empty for 404
+        } else {
+          setError(err); // Handle other errors
+        }
       } finally {
         setLoading(false);
       }
@@ -33,16 +40,29 @@ const LikedList = ({ userId }) => {
   const formatDuration = (duration) => {
     const parts = duration.split(':');
     if (parts.length >= 3) {
-      return `${parts[1]}:${parts[2].slice(0, 2)}`; // Lấy phút và giây
+      return `${parts[1]}:${parts[2].slice(0, 2)}`; // Return minutes and seconds
     }
-    return duration; // Trả về giá trị gốc nếu không thể phân tích
+    return duration; // Return original value if not parseable
   };
 
   const [hoveredTrackId, setHoveredTrackId] = useState(null);
 
+  const handleTrackDoubleClick = (track) => {
+    console.log('Đang phát bài hát:', track);
+    if (currentTrack?.trackId === track.trackId && isPlaying) {
+      playPause(); // Pause if currently playing
+    } else {
+      if (!track.filePath) {
+        console.error('Bài hát không có filePath:', track);
+        return;
+      }
+      playTrack(track); // Play the track
+    }
+  };
+
   if (loading) return <div>Đang tải...</div>;
   if (error) return <div>Có lỗi xảy ra: {error.message}</div>;
-  if (likedTracks.length === 0) return <div>Không có bài hát nào được yêu thích.</div>;
+  if (likedTracks.length === 0) return null;
 
   return (
     <div className='p-2'>
@@ -51,9 +71,10 @@ const LikedList = ({ userId }) => {
         {likedTracks.map((track) => (
           <div
             key={track.trackId}
-            className="relative flex items-center bg-[#1a1f32] p-4 rounded-xl"
+            className="relative flex items-center bg-[#1a1f32] p-4 rounded-xl cursor-pointer"
             onMouseEnter={() => setHoveredTrackId(track.trackId)}
             onMouseLeave={() => setHoveredTrackId(null)}
+            onDoubleClick={() => handleTrackDoubleClick(track)} // Double-click handler
           >
             <div className="relative">
               <img src={track.trackImage} alt={track.title} className="w-16 h-16 rounded-md" />

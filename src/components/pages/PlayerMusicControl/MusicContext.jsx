@@ -29,13 +29,14 @@ export const MusicProvider = ({ children }) => {
     };
 
     const handleEnded = () => {
-      // Cập nhật history khi bài hát kết thúc
-      const currentTrack = getCurrentTrack();
-      if (currentTrack) {
-        addToHistory(currentTrack);
-      }
-      nextTrack();
-    };
+    const currentTrack = getCurrentTrack();
+    if (currentTrack) {
+      addToHistory(currentTrack);
+    }
+    console.log("Bài hát hiện tại đã kết thúc:", currentTrack);
+    console.log("Hàng đợi trước khi phát bài tiếp theo:", queue);
+    nextTrack();
+  };
 
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -105,22 +106,22 @@ export const MusicProvider = ({ children }) => {
   };
 
   const nextTrack = () => {
+    console.log("Hàng đợi trước khi phát bài tiếp theo:", queue);
     if (queue.length > 0) {
-        // Play the next track in the queue
-        const nextTrack = queue[0];
-        setQueue(prevQueue => prevQueue.slice(1)); // Remove the played track from the queue
-        playTrack(nextTrack);
+      const nextTrack = queue[0];
+      setQueue(prevQueue => prevQueue.slice(1));
+      playTrack(nextTrack);
     } else if (tracks.length > 0) {
-        // If the queue is empty, play the next track in the playlist
-        const nextIndex = (currentTrackIndex + 1) % tracks.length;
-        setCurrentTrackIndex(nextIndex);
-        loadTrack(tracks[nextIndex]);
-        if (isPlaying) {
-            audioRef.current.play().catch(console.error);
-        }
+      const nextIndex = (currentTrackIndex + 1) % tracks.length;
+      setCurrentTrackIndex(nextIndex);
+      loadTrack(tracks[nextIndex]);
+      if (isPlaying) {
+        audioRef.current.play().catch(console.error);
+      }
     }
-};
-
+  };
+  
+  
 
   const previousTrack = () => {
     if (playHistory.length > 0) {
@@ -153,29 +154,33 @@ export const MusicProvider = ({ children }) => {
     audioRef.current.volume = level / 100;
   };
 
+  const addRemainingTracksToQueue = (startIndex) => {
+    const remainingTracks = tracks.slice(startIndex + 1);
+    setQueue(prevQueue => [...prevQueue, ...remainingTracks]);
+  };
   const getCurrentTrack = () => tracks[currentTrackIndex];
 
   const playTrack = (track) => {
     const trackIndex = tracks.findIndex((t) => t.trackId === track.trackId);
-  if (trackIndex !== -1) {
-    // Thêm bài hát hiện tại vào lịch sử trước khi phát bài mới
-    const currentTrack = getCurrentTrack();
-    if (currentTrack && currentTrack.trackId !== track.trackId) {
-      addToHistory(currentTrack);
+    if (trackIndex !== -1) {
+      const currentTrack = getCurrentTrack();
+      if (currentTrack && currentTrack.trackId !== track.trackId) {
+        addToHistory(currentTrack);
+      }
+      // Clear existing queue and add remaining tracks
+      setQueue([]);
+      addRemainingTracksToQueue(trackIndex);
+      
+      setCurrentTrackIndex(trackIndex);
+      audioRef.current.src = track.filePath;
+      audioRef.current.load();
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((error) => console.error("Error playing track:", error));
     }
-    setQueue(prevQueue => prevQueue.filter(t => t.trackId !== track.trackId));
-    // Cập nhật trạng thái phát bài hát mới
-    setCurrentTrackIndex(trackIndex);
-    audioRef.current.src = track.filePath;
-    audioRef.current.load();
-    audioRef.current
-      .play()
-      .then(() => setIsPlaying(true))
-      .catch((error) => {
-        console.error("Error playing track:", error);
-      });
-  }
   };
+
 
   const toggleQueueVisibility = () => {
     setIsQueueVisible(!isQueueVisible);

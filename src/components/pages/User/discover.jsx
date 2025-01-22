@@ -34,7 +34,7 @@ const Discover = () => {
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center mb-4">
                     <span className="text-white font-semibold">Gợi ý cho bạn</span>
-                    <a className="text-white/80 hover:text-white" href="">TẤT CẢ {'>'}</a>
+                    <a className="text-white/80 hover:text-white" href="/#">TẤT CẢ {'>'}</a>
                 </div>
 
                 {isLoading ? (
