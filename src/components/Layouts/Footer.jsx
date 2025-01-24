@@ -5,6 +5,7 @@ import { useMusic } from '../pages/PlayerMusicControl/MusicContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeOff, faVolumeHigh, faMusic, faList } from '@fortawesome/free-solid-svg-icons';
 import QueueSidebar from '../pages/User/QueueSidebar';
+
 const Footer = () => {
   const {
     currentTrack,
@@ -42,26 +43,46 @@ const Footer = () => {
     const newVolume = parseInt(event.target.value);
     setVolumeLevel(newVolume);
   };
-  const userId = JSON.parse(localStorage.getItem('user')).userId;
-  const handleLikeToggle = async () => {
-    const trackId = currentTrack.trackId; // Giả sử trackId có trong currentTrack
-    try {
-      if (isLiked) {
-        // Gọi API xóa bài hát yêu thích
-        const response = await axios.delete(`https://localhost:7078/api/FavoriteTracks/remove?userId=${userId}&trackId=${trackId}`, {
-          data: { userId, trackId }
-        });
-        console.log(response.data.message);
-      } else {
-        // Gọi API thêm bài hát yêu thích
-        const response = await axios.post(`https://localhost:7078/api/FavoriteTracks/add?userId=${userId}&trackId=${trackId}`);
-        console.log(response.data.message);
+
+  const userId = localStorage.getItem('user') 
+  ? JSON.parse(localStorage.getItem('user')).userId 
+  : null;
+
+useEffect(() => {
+  const checkIfTrackFavorited = async () => {
+    if (currentTrack && userId) {
+      try {
+        const response = await axios.get(`https://localhost:7078/api/FavoriteTracks/is-favorited?userId=${userId}&trackId=${currentTrack.trackId}`);
+        setIsLiked(response.data.isFavorited);
+      } catch (error) {
+        console.error("Error checking if track is favorited:", error);
       }
-      setIsLiked(!isLiked); // Chuyển đổi trạng thái yêu thích
-    } catch (error) {
-      console.error("Error updating favorite track:", error);
     }
   };
+
+  checkIfTrackFavorited();
+}, [currentTrack, userId]);
+
+const handleLikeToggle = async () => {
+  if (!userId || !currentTrack) return;
+
+  const trackId = currentTrack.trackId;
+  try {
+    if (isLiked) {
+      const response = await axios.delete(`https://localhost:7078/api/FavoriteTracks/remove?userId=${userId}&trackId=${trackId}`, {
+        data: { userId, trackId }
+      });
+      console.log(response.data.message);
+    } else {
+      const response = await axios.post(`https://localhost:7078/api/FavoriteTracks/add?userId=${userId}&trackId=${trackId}`);
+      console.log(response.data.message);
+    }
+    setIsLiked(!isLiked);
+  } catch (error) {
+    console.error("Error updating favorite track:", error);
+  }
+};
+
   useEffect(() => {
     const checkIfTrackFavorited = async () => {
       if (currentTrack) {
@@ -75,7 +96,23 @@ const Footer = () => {
     };
 
     checkIfTrackFavorited();
-  }, [currentTrack, userId]); 
+  }, [currentTrack, userId]);
+
+  // Lắng nghe sự kiện phím
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.code === 'Space') {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của phím Space
+        playPause();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [playPause]);
 
   return (
     <div className='w-full h-24 bg-black text-white text-center fixed bottom-0'>
@@ -125,7 +162,7 @@ const Footer = () => {
             </div>
 
             {/* Time Progress Bar */}
-            <div className="flex items-center w-full px-2">
+            <div className="flex items-center w-full px-2 ">
               <span className='p-1'>{formatTime(currentTime)}</span>
               <input
                 type="range"
@@ -133,10 +170,11 @@ const Footer = () => {
                 max="100"
                 value={(currentTime / (duration || 1)) * 100}
                 onChange={handleTimeSeek}
-                className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer focus:outline-none"
                 style={{
                   background: `linear-gradient(to right, white ${(currentTime / (duration || 1)) * 100}%, gray ${(currentTime / (duration || 1)) * 100}%)`,
                 }}
+                tabIndex="-1" 
               />
               <span className='p-1'>{formatTime(duration)}</span>
             </div>
