@@ -19,6 +19,15 @@ const TrackService = {
       console.error('Có lỗi xảy ra khi lấy thông tin bài hát:', error);
       throw error; 
     }
+  }, 
+  searchTerm: async (searchTerm) => {
+    try {
+      const response = await HttpProxy.get(`Track/searchTerm?searchTerm=${encodeURIComponent(searchTerm)}`);
+      return response.data;  
+    } catch (error) {
+      console.error('Có lỗi xảy ra khi tìm kiếm:', error);
+      throw error; 
+    }
   }
   
 };

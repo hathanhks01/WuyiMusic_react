@@ -4,7 +4,7 @@ const MusicContext = createContext(null);
 
 export const MusicProvider = ({ children }) => {
   const [tracks, setTracks] = useState([]);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
   const [currentTime, setCurrentTime] = useState(0);
@@ -107,12 +107,12 @@ export const MusicProvider = ({ children }) => {
 
   const nextTrack = () => {
     console.log("Hàng đợi trước khi phát bài tiếp theo:", queue);
-    if (queue.length > 0) {
-      // Always play the first track in the queue
-      const nextTrack = queue[0];
-      setQueue(prevQueue => prevQueue.slice(1));
-      playTrack(nextTrack);
-    } else if (tracks.length > 0) {
+   if (queue.length > 0) {
+    const [nextTrack, ...remainingTracks] = queue;
+    setQueue(remainingTracks); // ✅ Cập nhật queue mới
+    playTrack(nextTrack);
+    addRemainingTracksToQueue(tracks.indexOf(nextTrack)); // ✅ Thêm các bài còn lại
+  } else if (tracks.length > 0) {
       // Fallback to the next track in the tracks array if queue is empty
       const nextIndex = (currentTrackIndex + 1) % tracks.length;
       setCurrentTrackIndex(nextIndex);

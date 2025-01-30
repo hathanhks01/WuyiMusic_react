@@ -21,7 +21,7 @@ const TrackRankingChart = () => {
 
   return (
     <div className="w-full p-4">
-      <h2 className="text-xl font-bold text-center mb-4">Track Ranking Chart</h2>
+      <h2 className="text-xl font-bold text-center mb-4">Bảng xếp hạng</h2>
       <div className="w-full h-96">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart

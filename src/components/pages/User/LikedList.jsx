@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import TrackService from '../../../Services/TrackService';
-import { PlayCircleOutlined, PauseCircleOutlined } from '@ant-design/icons';
+import { PlayCircleOutlined, PauseCircleOutlined, HeartFilled } from '@ant-design/icons';
 import { useMusic } from '../PlayerMusicControl/MusicContext';
-import Login from '../Auth/Login';
+import FavoriteServices from '../../../Services/FavoriteServices'; // Import FavoriteServices
 
 const LikedList = ({ userId }) => {
   const [likedTracks, setLikedTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentTrack, playTrack, isPlaying, playPause } = useMusic();
-  
-  const [clickCount, setClickCount] = useState(0);
-  const [clickTimer, setClickTimer] = useState(null);
+  const [hoveredTrackId, setHoveredTrackId] = useState(null);
 
-
-  
   useEffect(() => {
     const fetchLikedTracks = async () => {
       try {
@@ -49,8 +44,6 @@ const LikedList = ({ userId }) => {
     return duration; // Return original value if not parseable
   };
 
-  const [hoveredTrackId, setHoveredTrackId] = useState(null);
-
   const handleTrackDoubleClick = (track) => {
     console.log('Đang phát bài hát:', track);
     if (currentTrack?.trackId === track.trackId && isPlaying) {
@@ -61,6 +54,15 @@ const LikedList = ({ userId }) => {
         return;
       }
       playTrack(track); // Play the track
+    }
+  };
+
+  const handleRemoveTrack = async (trackId) => {
+    try {
+      await FavoriteServices.Remove(userId, trackId);
+      setLikedTracks((prevTracks) => prevTracks.filter(track => track.trackId !== trackId)); // Update state
+    } catch (error) {
+      console.error('Error removing track:', error);
     }
   };
 
@@ -87,13 +89,13 @@ const LikedList = ({ userId }) => {
                   onClick={() => {
                     console.log('Đang phát bài hát:', track);
                     if (currentTrack?.trackId === track.trackId && isPlaying) {
-                      playPause(); // Dừng bài hát nếu đang phát
+                      playPause(); // Pause if currently playing
                     } else {
                       if (!track.filePath) {
                         console.error('Bài hát không có filePath:', track);
                         return;
                       }
-                      playTrack(track); // Phát bài hát
+                      playTrack(track); // Play the track
                     }
                   }}
                   className="absolute inset-0 flex items-center justify-center text-3xl text-white/80 hover:text-white transition-transform"
@@ -110,6 +112,17 @@ const LikedList = ({ userId }) => {
               <span className="block text-sm font-semibold">{track.title || 'Không có tên'}</span>
               <span className="block text-sm">{track.artist || 'Không có nghệ sĩ'}</span>
             </div>
+            <button
+              onClick={() => handleRemoveTrack(track.trackId)}
+              className="transition-all group"
+            >
+              <HeartFilled
+                style={{ color: 'red' }}
+                className="text-red-500 group-hover:text-white transition-colors duration-300"
+              />
+            </button>
+
+
             <span className="text-white ml-4">{formatDuration(track.duration)}</span>
           </div>
         ))}

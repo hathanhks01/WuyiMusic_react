@@ -3,7 +3,7 @@ import axios from 'axios';
 import { HeartOutlined, HeartFilled, PlayCircleOutlined, PauseCircleOutlined, StepBackwardOutlined, StepForwardOutlined } from '@ant-design/icons';
 import { useMusic } from '../pages/PlayerMusicControl/MusicContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVolumeOff, faVolumeHigh, faMusic, faList } from '@fortawesome/free-solid-svg-icons';
+import { faVolumeOff, faVolumeHigh, faMusic, faList, faShuffle, faRepeat } from '@fortawesome/free-solid-svg-icons';
 import QueueSidebar from '../pages/User/QueueSidebar';
 
 const Footer = () => {
@@ -24,6 +24,13 @@ const Footer = () => {
 
   const [isLiked, setIsLiked] = useState(false);
 
+  useEffect(() => {
+    if (currentTrack) {
+      document.title = `${currentTrack.title}  - WuyiMusic`; // Update the title here
+    } else {
+      document.title = 'WuyiMusic'; // Default title
+    }
+  }, [currentTrack]);
   // Format time helper function
   const formatTime = (time) => {
     if (!time || isNaN(time)) return "0:00";
@@ -44,44 +51,44 @@ const Footer = () => {
     setVolumeLevel(newVolume);
   };
 
-  const userId = localStorage.getItem('user') 
-  ? JSON.parse(localStorage.getItem('user')).userId 
-  : null;
+  const userId = localStorage.getItem('user')
+    ? JSON.parse(localStorage.getItem('user')).userId
+    : null;
 
-useEffect(() => {
-  const checkIfTrackFavorited = async () => {
-    if (currentTrack && userId) {
-      try {
-        const response = await axios.get(`https://localhost:7078/api/FavoriteTracks/is-favorited?userId=${userId}&trackId=${currentTrack.trackId}`);
-        setIsLiked(response.data.isFavorited);
-      } catch (error) {
-        console.error("Error checking if track is favorited:", error);
+  useEffect(() => {
+    const checkIfTrackFavorited = async () => {
+      if (currentTrack && userId) {
+        try {
+          const response = await axios.get(`https://localhost:7078/api/FavoriteTracks/is-favorited?userId=${userId}&trackId=${currentTrack.trackId}`);
+          setIsLiked(response.data.isFavorited);
+        } catch (error) {
+          console.error("Error checking if track is favorited:", error);
+        }
       }
+    };
+
+    checkIfTrackFavorited();
+  }, [currentTrack, userId]);
+
+  const handleLikeToggle = async () => {
+    if (!userId || !currentTrack) return;
+
+    const trackId = currentTrack.trackId;
+    try {
+      if (isLiked) {
+        const response = await axios.delete(`https://localhost:7078/api/FavoriteTracks/remove?userId=${userId}&trackId=${trackId}`, {
+          data: { userId, trackId }
+        });
+        console.log(response.data.message);
+      } else {
+        const response = await axios.post(`https://localhost:7078/api/FavoriteTracks/add?userId=${userId}&trackId=${trackId}`);
+        console.log(response.data.message);
+      }
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error("Error updating favorite track:", error);
     }
   };
-
-  checkIfTrackFavorited();
-}, [currentTrack, userId]);
-
-const handleLikeToggle = async () => {
-  if (!userId || !currentTrack) return;
-
-  const trackId = currentTrack.trackId;
-  try {
-    if (isLiked) {
-      const response = await axios.delete(`https://localhost:7078/api/FavoriteTracks/remove?userId=${userId}&trackId=${trackId}`, {
-        data: { userId, trackId }
-      });
-      console.log(response.data.message);
-    } else {
-      const response = await axios.post(`https://localhost:7078/api/FavoriteTracks/add?userId=${userId}&trackId=${trackId}`);
-      console.log(response.data.message);
-    }
-    setIsLiked(!isLiked);
-  } catch (error) {
-    console.error("Error updating favorite track:", error);
-  }
-};
 
   useEffect(() => {
     const checkIfTrackFavorited = async () => {
@@ -143,6 +150,11 @@ const handleLikeToggle = async () => {
         <div className="flex-1 flex items-center justify-center">
           <div className='w-full'>
             <div className="flex justify-center items-center space-x-4">
+            <button
+                className="text-xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform"
+              >
+                <FontAwesomeIcon icon={faRepeat} />
+              </button>
               <button
                 onClick={previousTrack}
                 className="text-2xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform">
@@ -159,6 +171,12 @@ const handleLikeToggle = async () => {
                 className="text-2xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform">
                 <StepForwardOutlined />
               </button>
+              <button
+              
+                className="text-xl p-2 text-white/50 hover:text-white hover:scale-105 transition-transform"
+              >
+                <FontAwesomeIcon icon={faShuffle} />
+              </button>
             </div>
 
             {/* Time Progress Bar */}
@@ -174,7 +192,7 @@ const handleLikeToggle = async () => {
                 style={{
                   background: `linear-gradient(to right, white ${(currentTime / (duration || 1)) * 100}%, gray ${(currentTime / (duration || 1)) * 100}%)`,
                 }}
-                tabIndex="-1" 
+                tabIndex="-1"
               />
               <span className='p-1'>{formatTime(duration)}</span>
             </div>

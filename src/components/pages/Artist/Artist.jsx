@@ -1,11 +1,13 @@
 import React from 'react';
+import{Profile} from '../Artist/index'
+import { Route, Routes } from 'react-router-dom';
 
 const Artist = () => {
     return (
-        <div>
-            <h1>Trang Nghệ Sĩ</h1>
-            {/* Nội dung của trang nghệ sĩ */}
-        </div>
+        <Routes>
+            <Route path='/artist' element={<Profile />} />
+
+        </Routes>
     );
 };
 

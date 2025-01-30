@@ -2,7 +2,15 @@
 import http from "../common/http-common";
 
 class AuthService {
-    
+  checkEmail = async (email) => {
+    try {
+      const response = await http.get(`/Auth/CheckEmailExists?email=${email}`);
+      return response.data; 
+    } catch (error) {
+      console.error('Check email error:', error);
+      throw this.handleError(error);
+    }
+  }
     login = async (username, password) => {
 
         try {

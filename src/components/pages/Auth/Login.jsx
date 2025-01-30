@@ -69,9 +69,7 @@ const Login = ({ setIsModalOpen, onLoginSuccess }) => {
       </form>
 
       <div className="mt-4 text-center">
-        <a href="/register" className="text-blue-500 hover:text-blue-600">
-          Bạn chưa có tài khoản?
-        </a>
+       
       </div>
 
       <button
