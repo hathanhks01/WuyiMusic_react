@@ -28,7 +28,21 @@ const TrackService = {
       console.error('Có lỗi xảy ra khi tìm kiếm:', error);
       throw error; 
     }
-  }
+  },
+  addTrack: async (formData) => {
+    try {
+
+      const response = await HttpProxy.post('Track/addtrack', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading track:', error);
+      throw error;
+    }
+  },
   
 };
 

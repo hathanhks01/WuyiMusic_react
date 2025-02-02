@@ -1,4 +1,13 @@
 import Profile from "./Profile";
-export{
-    Profile
+import Home from "./Home";
+import ArtistNav from "./ArtistNav";
+import Upload from "./Upload";
+
+
+
+export {
+    Profile,
+    Home,
+    ArtistNav,
+    Upload
 }
