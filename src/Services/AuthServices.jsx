@@ -2,7 +2,15 @@
 import http from "../common/http-common";
 
 class AuthService {
-    
+  checkEmail = async (email) => {
+    try {
+      const response = await http.get(`/Auth/CheckEmailExists?email=${email}`);
+      return response.data; 
+    } catch (error) {
+      console.error('Check email error:', error);
+      throw this.handleError(error);
+    }
+  }
     login = async (username, password) => {
 
         try {
@@ -18,6 +26,7 @@ class AuthService {
                   username: response.data.user.username,  
               };
               localStorage.setItem('user', JSON.stringify(userInfo));
+              
             }
             return response.data;
         } catch (error) {

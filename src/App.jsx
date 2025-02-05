@@ -5,6 +5,7 @@ import Sidebar from './components/Layouts/Sidebar';
 import Footer from './components/Layouts/Footer';
 import Main from './components/Layouts/Maincontents'; // Router của khách
 import AdminLayout from './components/pages/Admin/Admin'; // Layout admin
+import ArtistLayout from './components/pages/Artist/Artist'
 import { MusicProvider } from './components/pages/PlayerMusicControl/MusicContext'; // Điều chỉnh đường dẫn nếu cần
 
 
@@ -27,6 +28,9 @@ function App() {
           />
           {/* Layout dành cho admin */}
           <Route path="/admin/*" element={<AdminLayout />}>
+
+          </Route>
+          <Route path="/artist/*" element={<ArtistLayout />}>
 
           </Route>
         </Routes>

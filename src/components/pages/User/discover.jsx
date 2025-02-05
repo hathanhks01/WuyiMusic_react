@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import TrackService from '../../../Services/TrackService';
+import ArtistServices from '../../../Services/ArtistServices';
 import Banner from '../../Layouts/Banner'
 import { PlayCircleOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { useMusic } from '../PlayerMusicControl/MusicContext';
@@ -7,6 +8,7 @@ import { useMusic } from '../PlayerMusicControl/MusicContext';
 const Discover = () => {
     const [ListSong, SetListSong] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [artistData, setArtistData] = useState([]);
     const [error, setError] = useState('');
     const { currentTrack, playTrack, isPlaying, playPause, setTracks } = useMusic();
     const fetchTrack = async () => {
@@ -25,16 +27,32 @@ const Discover = () => {
         }
     };
 
+
     useEffect(() => {
         fetchTrack();
     }, []);
 
+    useEffect(() => {
+        const fetchArtist = async () => {
+            try {
+                const response = await ArtistServices.GetAllArtist();
+                console.log("Dữ liệu nghệ sĩ là:", response);
+                setArtistData(response.$values);
+                startTypingEffect(response.name);
+            } catch (err) {
+                setError("Có lỗi xảy ra khi lấy dữ liệu nghệ sĩ");
+                console.error("Error fetching artist data:", err);
+            }
+        };
+
+        fetchArtist();
+    }, []);
     return (
-        <div className="min-h-screen mt-6 bg-[#111727]">    
+        <div className="min-h-screen mt-6 bg-[#111727]">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center mb-4">
                     <span className="text-white font-semibold">Gợi ý cho bạn</span>
-                    <a className="text-white/80 hover:text-white" href="">TẤT CẢ {'>'}</a>
+                    <a className="text-white/80 hover:text-white" href="/#">TẤT CẢ {'>'}</a>
                 </div>
 
                 {isLoading ? (
@@ -86,7 +104,28 @@ const Discover = () => {
                         ))}
                     </div>
                 )}
+
             </div>
+            <div className="container mx-auto px-4 pt-3">
+                <div className="flex justify-between items-center mb-4">
+                    <span className="text-white font-semibold">Nghệ sĩ</span>
+                </div>
+                <div className="flex justify-between items-center overflow-x-auto">
+                    {artistData.map((artist) => (
+                        <div key={artist.artistId} className="flex flex-col items-center mx-2">
+                            <img
+                                src={artist.artistImage || ''}
+                                alt={artist.name || 'Artist'}
+                                className="object-cover w-28 h-28 rounded-full"
+                            />
+                            <span className="text-white mt-2 text-center">
+                                {artist.name}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
         </div>
     );
 };
