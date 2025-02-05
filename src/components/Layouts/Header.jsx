@@ -66,5 +66,7 @@ const Header = ({ onSearch }) => {
 Header.propTypes = {
   onSearch: PropTypes.func.isRequired,
 };
-
+Header.defaultProps = {
+  onSearch: () => {}, // Một function rỗng để tránh lỗi khi không truyền prop
+};
 export default Header;
