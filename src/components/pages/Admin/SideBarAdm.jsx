@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-
 const SideBarAdm = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -43,7 +42,7 @@ const SideBarAdm = () => {
                 }`
               }
             >
-              Statistics
+              Thống Kê
             </NavLink>
           </li>
           {/* Dropdown Menu */}
@@ -68,7 +67,7 @@ const SideBarAdm = () => {
                       }`
                     }
                   >
-                    Rating
+                    Đánh Giá
                   </NavLink>
                 </li>
                 <li className="mb-2">
@@ -83,6 +82,20 @@ const SideBarAdm = () => {
                     }
                   >
                     Suggestion
+                  </NavLink>
+                </li>
+                <li className="mb-2">
+                  <NavLink
+                    to="/admin/artist"
+                    className={({ isActive }) =>
+                      `block p-2 ${
+                        isActive
+                          ? 'bg-white/20 text-white'
+                          : 'text-white/80 hover:bg-white/20 hover:text-white'
+                      }`
+                    }
+                  >
+                    Nghệ Sĩ
                   </NavLink>
                 </li>
               </ul>

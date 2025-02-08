@@ -4,6 +4,7 @@ import SideBarAdm from './SideBarAdm';
 import MainContentsAdm from './MainContentsAdm';
 import RatingAdm from './RatingAdm';
 import SuggestionAdm from './SuggestionAdm';
+import ArtistAdm from './ArtistAdm';
 
 const Admin = () => {
     return (
@@ -14,8 +15,8 @@ const Admin = () => {
                     <Routes>
                         <Route path="/" element={<h1>Admin Statistics</h1>} />
                         <Route path="/rating" element={<RatingAdm />} />
-                        <Route path="/suggestion" element={<SuggestionAdm />} />
-                        <Route path="*" element={<h1>404 - Admin Page Not Found</h1>} />
+                        <Route path="/suggestion" element={<SuggestionAdm />} /> 
+                        <Route path="/artist" element={<ArtistAdm />} />                      
                     </Routes>
                 </MainContentsAdm>
             </div>
