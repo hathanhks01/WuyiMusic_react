@@ -15,17 +15,19 @@ const Discover = () => {
         try {
             setIsLoading(true);
             const response = await TrackService.GetAllTrack();
-            console.log('Dữ liệu bài hát:', response.$values);
-            const tracks = response.$values || [];
-            SetListSong(tracks);
-            setTracks(tracks); // Cập nhật tracks trong MusicContext
+            console.log('Dữ liệu bài hát:', response);  // Kiểm tra dữ liệu trả về
+            SetListSong(response);  // Không cần .values
+            setTracks(response);
         } catch (error) {
             console.error('Lỗi khi tải bài hát:', error);
             setError('Không thể tải danh sách bài hát');
+            SetListSong([]); // Đảm bảo giá trị mặc định nếu lỗi
         } finally {
             setIsLoading(false);
         }
     };
+    
+    
 
 
     useEffect(() => {
@@ -37,7 +39,7 @@ const Discover = () => {
             try {
                 const response = await ArtistServices.GetAllArtist();
                 console.log("Dữ liệu nghệ sĩ là:", response);
-                setArtistData(response.$values);
+                setArtistData(response);
                 startTypingEffect(response.name);
             } catch (err) {
                 setError("Có lỗi xảy ra khi lấy dữ liệu nghệ sĩ");
@@ -48,7 +50,7 @@ const Discover = () => {
         fetchArtist();
     }, []);
     return (
-        <div className="min-h-screen mt-6 bg-[#111727]">
+        <div className="min-h-screen mt-6 mb-16 bg-[#111727]">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center mb-4">
                     <span className="text-white font-semibold">Gợi ý cho bạn</span>
@@ -69,7 +71,7 @@ const Discover = () => {
                                 <div className="w-16 h-16 object-cover">
                                     <img
                                         src={track.trackImage}
-                                        alt={track.trackName || 'Track Image'}
+                                        altnp={track.trackName || 'Track Image'}
                                         className="w-full h-full rounded-md"
                                     />
                                 </div>

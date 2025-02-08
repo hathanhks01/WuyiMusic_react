@@ -31,7 +31,11 @@ const TrackService = {
   },
   addTrack: async (formData) => {
     try {
-
+      const userInfo = JSON.parse(localStorage.getItem('user'));
+        if (!userInfo || !userInfo.userId) {
+            throw new Error('User not found in localStorage');
+        }
+        formData.append('ArtistId', userInfo.userId); 
       const response = await HttpProxy.post('Track/addtrack', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

@@ -17,8 +17,8 @@ const LikedList = ({ userId }) => {
         const response = await TrackService.GetFavoriteTrack(userId);
         console.log("Dữ liệu trả về từ API:", response);
 
-        if (response && Array.isArray(response.$values)) {
-          setLikedTracks(response.$values);
+        if (response && Array.isArray(response)) {
+          setLikedTracks(response);
         } else {
           throw new Error('Dữ liệu không hợp lệ');
         }
@@ -71,7 +71,7 @@ const LikedList = ({ userId }) => {
   if (likedTracks.length === 0) return null;
 
   return (
-    <div className='p-2'>
+    <div className='p-2 pb-16'>
       <h2>Bài hát đã thích</h2>
       <div className="flex flex-col space-y-4">
         {likedTracks.map((track) => (
@@ -110,7 +110,7 @@ const LikedList = ({ userId }) => {
             </div>
             <div className="flex-1 text-white ml-4">
               <span className="block text-sm font-semibold">{track.title || 'Không có tên'}</span>
-              <span className="block text-sm">{track.artist || 'Không có nghệ sĩ'}</span>
+              <span className="block text-sm">{track.artist?.name || 'Không có nghệ sĩ'}</span>
             </div>
             <button
               onClick={() => handleRemoveTrack(track.trackId)}
