@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 import { Button } from "antd";
 import { UserOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
@@ -156,6 +157,13 @@ const Header = () => {
       )}
     </div>
   );
+};
+
+Header.propTypes = {
+  onSearch: PropTypes.func.isRequired,
+};
+Header.defaultProps = {
+  onSearch: () => {}, // Một function rỗng để tránh lỗi khi không truyền prop
 };
 
 export default Header;

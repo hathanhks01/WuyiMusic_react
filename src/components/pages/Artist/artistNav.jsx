@@ -3,44 +3,52 @@ import { Link, useLocation } from 'react-router-dom';
 
 const ArtistNav = () => {
   const location = useLocation();
-  
-  // Function to check if link is active
+
+  // Hàm kiểm tra active của link
   const isActive = (path) => {
-    return location.pathname === path ? 'nav-link active text-blue-600' : 'nav-link';
+    return location.pathname === path 
+      ? 'text-blue-600' // Khi active: text màu xanh đậm
+      : 'text-white';   // Khi không active: mặc định là trắng
   };
 
   return (
-    <div className='h-16 flex flex-col items-center'>
-      <div className='w-full text-2xl mt-6 '>
-        <div className='flex justify-center space-x-8'>
-            <Link to="/" className="text-[30px] text-red-700 font-bold">WuyiMusic</Link>
+    <nav className="bg-gray-900 p-4 fixed top-0 w-full z-50">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Tiêu đề trang */}
+        <div className="text-xl font-bold">
+          <Link to="/" className="text-red-700 font-bold">
+            WuyiMusic
+          </Link>
+        </div>
+        {/* Các link điều hướng */}
+        <div className="flex space-x-6">
           <Link 
             to="/artist" 
-            className={isActive('/artist')}
+            className={`${isActive('/artist')} hover:text-blue-500`}
           >
             Home
           </Link>
           <Link 
             to="/artist/profile" 
-            className={isActive('/artist/profile')}
+            className={`${isActive('/artist/profile')} hover:text-blue-500`}
           >
             Profile
           </Link>
           <Link 
             to="/artist/upload" 
-            className={isActive('/artist/upload')}
+            className={`${isActive('/artist/upload')} hover:text-blue-500`}
           >
             Upload
           </Link>
           <Link 
-            to="#" 
-            className={isActive('/artist/contact')}
+            to="/artist/tracks" 
+            className={`${isActive('/artist/tracks')} hover:text-blue-500`}
           >
             My Track
           </Link>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

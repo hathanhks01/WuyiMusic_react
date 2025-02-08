@@ -69,7 +69,7 @@ export default function Upload() {
   const progressSticker = stickers.music;
 
   return (
-    <div className="min-h-screen mt-6 bg-slate-100 p-6">
+    <div className="min-h-screen mt-16 bg-slate-100 p-6">
       <div className="max-w-full">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Upload Track</h2>
 
