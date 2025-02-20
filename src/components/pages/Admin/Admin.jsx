@@ -6,7 +6,7 @@ import RatingAdm from './RatingAdm';
 import SuggestionAdm from './SuggestionAdm';
 import ArtistAdm from './ArtistAdm';
 import Genre from './Genre';
-import{ Statistics,ManagerTrack, ManagerAdvertisement} from './index'
+import{ Statistics,ManagerTrack, ManagerLyric} from './index'
 
 const Admin = () => {
     return (
@@ -26,7 +26,7 @@ const Admin = () => {
                         <Route path="/artist" element={<ArtistAdm />} />
                         <Route path="/genre" element={<Genre />} />
                         <Route path="/ManagerTrack" element={<ManagerTrack />} />
-                        <Route path="/ManagerAdvertisement" element={<ManagerAdvertisement />} />
+                        <Route path="/ManagerLyric" element={<ManagerLyric />} />
                     </Routes>
                 </MainContentsAdm>
             </div>

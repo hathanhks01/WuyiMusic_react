@@ -34,7 +34,7 @@ const ManagerTrack = () => {
   const openModal = (record = null) => {
     setModalVisible(true);
     setEditingTrack(record);
-    if (record) {
+    if (record) { 
       form.setFieldsValue({
         Title: record.title,
         TrackImage: record.trackImage,

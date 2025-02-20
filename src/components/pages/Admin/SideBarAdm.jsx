@@ -114,7 +114,7 @@ const SideBarAdm = () => {
                 </li>
                 <li className="mb-2">
                   <NavLink
-                    to="/admin/managerAdvertisement"
+                    to="/admin/managerLyric"
                     className={({ isActive }) =>
                       `block p-2 ${
                         isActive
@@ -123,7 +123,7 @@ const SideBarAdm = () => {
                       }`
                     }
                   >
-                    Quảng cáo
+                    Bài Hát
                   </NavLink>
                 </li>
                 <li className="mb-2">
