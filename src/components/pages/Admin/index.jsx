@@ -3,7 +3,7 @@ import MainContentsAdm from "./MainContentsAdm";
 import Chart from "./Chart";
 import Statistics from'./Statistics'
 import ManagerTrack from "./ManagerTrack";
-import ManagerLyric from "./ManagerLyric";
+import ManagerArist from "./ManagerArtist";
 
 export{
     SideBarAdm,
@@ -11,5 +11,5 @@ export{
     Chart,
     Statistics,
     ManagerTrack,
-    ManagerLyric
+    ManagerArist
 }

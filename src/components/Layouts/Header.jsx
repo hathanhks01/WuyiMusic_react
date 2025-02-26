@@ -8,7 +8,7 @@ import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import TrackService from "../../Services/TrackService";
 
-const Header = () => {
+const Header = ({ onSearch = () => {} }) => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,8 +18,16 @@ const Header = () => {
     tracks: [],
     artists: [],
   });
-  // State to disable the search effect after selecting a result
   const [disableSearch, setDisableSearch] = useState(false);
+
+  const handleArtistClick = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setIsModalOpen(true);
+      return;
+    }
+    navigate('/artist');
+  };
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -28,16 +36,13 @@ const Header = () => {
     }
   }, []);
 
-
-
-  // When the user types manually, ensure search is enabled.
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
     setDisableSearch(false);
   };
 
   useEffect(() => {
-    if (disableSearch) return; // Skip search if disabled
+    if (disableSearch) return;
 
     const delayDebounceFn = setTimeout(() => {
       performSearch();
@@ -62,11 +67,10 @@ const Header = () => {
     }
   };
 
-  // When a result is clicked, fill the input with the clicked value
   const handleSearchResultClick = (value) => {
     setSearch(value);
     setSearchResults({ tracks: [], artists: [] });
-    setDisableSearch(true); // Prevent immediate re-search on input change
+    setDisableSearch(true);
   };
 
   const handleLoginSuccess = (userInfo) => {
@@ -89,44 +93,6 @@ const Header = () => {
     setIsRegisterMode(false);
   };
 
-  const renderSearchResults = () => {
-    // Optionally, only show dropdown when there are results.
-    if (!search || (searchResults.tracks.length === 0 && searchResults.artists.length === 0)) return null;
-
-    return (
-      <div className="absolute top-full mt-2 w-full bg-gray-800 rounded-lg shadow-lg z-50">
-        {searchResults.tracks.length > 0 && (
-          <div className="p-2">
-            <h3 className="text-white font-bold mb-2">Tracks</h3>
-            {searchResults.tracks.map((track, index) => (
-              <div
-                key={`track-${track.trackId || index}`}
-                className="text-white hover:bg-gray-700 p-2 rounded cursor-pointer"
-                onClick={() => handleSearchResultClick(track.title)}
-              >
-                {track.title}
-              </div>
-            ))}
-          </div>
-        )}
-        {searchResults.artists.length > 0 && (
-          <div className="p-2">
-            <h3 className="text-white font-bold mb-2">Artists</h3>
-            {searchResults.artists.map((artist, index) => (
-              <div
-                key={`artist-${artist.artistId || index}`}
-                className="text-white hover:bg-gray-700 p-2 rounded cursor-pointer"
-                onClick={() => handleSearchResultClick(artist.name)}
-              >
-                {artist.name}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="p-2 flex justify-between fixed top-0 left-0 w-full z-[9999] bg-black">
       <div className="flex pr-3 items-center gap-8">
@@ -141,16 +107,15 @@ const Header = () => {
             value={search}
             onChange={handleSearchChange}
           />
-          {renderSearchResults()}
         </div>
       </div>
       <div className="flex items-center space-x-5">
-        <a
-          href="/artist"
+        <button
+          onClick={handleArtistClick}
           className="hover:text-red-700 text-white"
         >
           For Artist
-        </a>
+        </button>
         <div
           className="actions"
           style={{ display: "flex", alignItems: "center", gap: "16px" }}
@@ -215,11 +180,7 @@ const Header = () => {
 };
 
 Header.propTypes = {
-  onSearch: PropTypes.func.isRequired,
-};
-
-Header.defaultProps = {
-  onSearch: () => {},
+  onSearch: PropTypes.func,
 };
 
 export default Header;
