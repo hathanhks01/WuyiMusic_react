@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import TrackService from '../../../Services/TrackService';
 import ArtistServices from '../../../Services/ArtistServices';
+import AlbumService from '../../../Services/AlbumService';
 import { PlayCircleOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { useMusic } from '../PlayerMusicControl/MusicContext';
+import { useNavigate } from 'react-router-dom';
 import Card from './card';
 
 const Discover = () => {
   const [ListSong, setListSong] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [artistData, setArtistData] = useState([]);
+  const [albumData, setAlbumData] = useState([]);
+  const navigate = useNavigate();
   const [error, setError] = useState('');
   const { currentTrack, playTrack, isPlaying, playPause, setTracks } = useMusic();
 
@@ -33,7 +37,17 @@ const Discover = () => {
       const response = await ArtistServices.GetRamdomArtist();
       console.log("Dữ liệu nghệ sĩ là:", response);
       setArtistData(response);
-      // Nếu cần hiệu ứng gõ chữ, bạn có thể gọi hàm startTypingEffect ở đây
+    } catch (err) {
+      setError("Có lỗi xảy ra khi lấy dữ liệu nghệ sĩ");
+      console.error("Error fetching artist data:", err);
+    }
+  };
+
+  const fetchAlbum = async () => {
+    try {
+      const response = await AlbumService.getAllAlbums();
+      console.log("Dữ liệu Albums là:", response.data);
+      setAlbumData(response.data);
     } catch (err) {
       setError("Có lỗi xảy ra khi lấy dữ liệu nghệ sĩ");
       console.error("Error fetching artist data:", err);
@@ -43,6 +57,7 @@ const Discover = () => {
   useEffect(() => {
     fetchTrack();
     fetchArtist();
+    fetchAlbum();
   }, []);
 
   const handleRefreshArtists = () => {
@@ -50,13 +65,16 @@ const Discover = () => {
   };
 
   return (
-    <div className="w-full min-h-[calc(140vh-4rem)] bg-[#111727]  overflow-y-auto">
+    <div className="w-full min-h-[calc(180vh-4rem)] bg-[#111727] overflow-y-auto">
       <div className="max-w-screen-xl mx-auto px-4">
         <div className="mt-6 mb-4 flex justify-between items-center">
           <span className="text-white font-semibold">Gợi ý cho bạn</span>
-          <a className="text-white/80 hover:text-white" href="/#">
-            TẤT CẢ {'>'}
-          </a>
+          <button
+            className="text-white/80 hover:text-white"
+            onClick={() => navigate('/all-tracks')}
+          >
+            Hiện tất cả
+          </button>
         </div>
 
         {isLoading ? (
@@ -85,13 +103,13 @@ const Discover = () => {
                 <button
                   onClick={() => {
                     if (currentTrack?.trackId === track.trackId && isPlaying) {
-                      playPause(); // Dừng nếu đang phát
+                      playPause();
                     } else {
                       if (!track.filePath) {
                         console.error('Bài hát không có filePath:', track);
                         return;
                       }
-                      playTrack(track); // Phát bài hát
+                      playTrack(track);
                     }
                   }}
                   className="text-3xl text-white/80 hover:text-white transition-transform"
@@ -115,10 +133,9 @@ const Discover = () => {
               className="text-white/80 font-semibold hover:text-white"
               onClick={handleRefreshArtists}
             >
-              LÀM MỚI
+              Làm mới
             </button>
           </div>
-          {/* Sử dụng flex kết hợp overflow-x-auto để danh sách nghệ sĩ cuộn ngang */}
           <div className="flex gap-8 overflow-x-auto pb-2 scrollbar-hide">
             {artistData.map((artist) => (
               <Card
@@ -130,6 +147,52 @@ const Discover = () => {
             ))}
           </div>
         </div>
+        {/* Phần album mới */}
+        <div className="mt-8 mx-5">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-white font-semibold text-xl">Albums</span>
+            <button
+            className="text-white/80 hover:text-white"
+            onClick={() => navigate('/all-albums')}
+          >
+            Hiện tất cả
+          </button>
+          </div>
+          <div className="flex gap-8 overflow-x-auto pb-2 scrollbar-hide">
+            {Array.isArray(albumData) &&
+              albumData.map((album) => (
+                <div
+                  key={album.id}
+                  className="flex-shrink-0 flex flex-col items-start bg-gray-800 p-4 rounded-lg shadow-md transition-transform hover:scale-105 w-56"
+                >
+                  <div className="relative group">
+                    <img
+                      className="w-52 h-52 object-cover rounded-lg"
+                      src={album.albumImage}
+                      alt={album.title}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <button className="transition-transform duration-200 transform hover:scale-[1.1]">
+                        <PlayCircleOutlined className="text-white text-5xl" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 text-left">
+                    <span className="max-w-52 block text-lg font-light text-white truncate">
+                      {album.title}
+                    </span>
+                    <span className="block text-sm text-gray-400 hover:text-white transition-colors">
+                      {album.artist.name}
+                    </span>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+
+
+
       </div>
     </div>
   );

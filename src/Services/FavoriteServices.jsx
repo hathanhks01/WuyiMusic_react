@@ -1,4 +1,3 @@
-
 import HttpProxy from '../common/http-common';
 
 const FavoriteServices = {
