@@ -8,7 +8,7 @@ import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import TrackService from "../../Services/TrackService";
 
-const Header = () => {
+const Header = ({ onSearch = () => {} }) => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +18,6 @@ const Header = () => {
     tracks: [],
     artists: [],
   });
-  // State to disable the search effect after selecting a result
   const [disableSearch, setDisableSearch] = useState(false);
 
   const handleArtistClick = () => {
@@ -31,6 +30,7 @@ const Header = () => {
     // Nếu đã đăng nhập, điều hướng đến trang artist
     navigate('/artist');
   };
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -38,16 +38,13 @@ const Header = () => {
     }
   }, []);
 
-
-
-  // When the user types manually, ensure search is enabled.
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
     setDisableSearch(false);
   };
 
   useEffect(() => {
-    if (disableSearch) return; // Skip search if disabled
+    if (disableSearch) return;
 
     const delayDebounceFn = setTimeout(() => {
       performSearch();
@@ -72,11 +69,10 @@ const Header = () => {
     }
   };
 
-  // When a result is clicked, fill the input with the clicked value
   const handleSearchResultClick = (value) => {
     setSearch(value);
     setSearchResults({ tracks: [], artists: [] });
-    setDisableSearch(true); // Prevent immediate re-search on input change
+    setDisableSearch(true);
   };
 
   const handleLoginSuccess = (userInfo) => {
@@ -98,7 +94,6 @@ const Header = () => {
     setIsModalOpen(true);
     setIsRegisterMode(false);
   };
-
 
 
   return (
@@ -188,11 +183,7 @@ const Header = () => {
 };
 
 Header.propTypes = {
-  onSearch: PropTypes.func.isRequired,
-};
-
-Header.defaultProps = {
-  onSearch: () => {},
+  onSearch: PropTypes.func,
 };
 
 export default Header;

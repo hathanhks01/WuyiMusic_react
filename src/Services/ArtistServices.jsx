@@ -46,7 +46,6 @@ const ArtistServices = {
 
       const formData = new FormData();
       formData.append('Name', artistDto.name);
-      formData.append('Name', artistDto.name);
       formData.append('Bio', artistDto.bio);
       formData.append('userId', userId);
       if (imageFile) {
@@ -73,8 +72,18 @@ const ArtistServices = {
       console.error('Có lỗi xảy ra khi lấy thông tin nghệ sĩ:', error);
       throw error; 
     }
+  },UpdateArtist: async (artistId, formData) => {
+    try {    
+      return await http.put(`/Artist/UpdateArtist/${artistId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data' // THÊM HEADER NÀY
+        }
+      });
+    } catch (error) {
+      console.error('Update artist error:', error);
+      throw error;
+    }
   },
-  
 };
 
 export default ArtistServices;

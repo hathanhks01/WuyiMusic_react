@@ -14,7 +14,7 @@ const Discover = () => {
   const [albumData, setAlbumData] = useState([]);
   const navigate = useNavigate();
   const [error, setError] = useState('');
-  const { currentTrack, playTrack, isPlaying, playPause, setTracks } = useMusic();
+  const { currentTrack, playTrack, isPlaying, playPause, setTracks, playAlbum  } = useMusic();
 
   const fetchTrack = async () => {
     try {
@@ -147,6 +147,7 @@ const Discover = () => {
             ))}
           </div>
         </div>
+
         {/* Phần album mới */}
         <div className="mt-8 mx-5">
           <div className="flex justify-between items-center mb-4">
@@ -162,7 +163,8 @@ const Discover = () => {
             {Array.isArray(albumData) &&
               albumData.map((album) => (
                 <div
-                  key={album.id}
+                  key={album.albumId || album.id}
+
                   className="flex-shrink-0 flex flex-col items-start bg-gray-800 p-4 rounded-lg shadow-md transition-transform hover:scale-105 w-56"
                 >
                   <div className="relative group">
@@ -172,7 +174,11 @@ const Discover = () => {
                       alt={album.title}
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <button className="transition-transform duration-200 transform hover:scale-[1.1]">
+                      <button 
+                        className="transition-transform duration-200 transform hover:scale-[1.1]"
+                        onClick={() => playAlbum(album.albumId)}
+                      >
+
                         <PlayCircleOutlined className="text-white text-5xl" />
                       </button>
                     </div>
@@ -183,15 +189,13 @@ const Discover = () => {
                       {album.title}
                     </span>
                     <span className="block text-sm text-gray-400 hover:text-white transition-colors">
-                      {album.artist.name}
+                      {album.artist?.name || 'Nghệ sĩ không xác định'}
                     </span>
                   </div>
                 </div>
               ))}
           </div>
         </div>
-
-
 
       </div>
     </div>

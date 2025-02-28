@@ -114,20 +114,6 @@ const SideBarAdm = () => {
                 </li>
                 <li className="mb-2">
                   <NavLink
-                    to="/admin/managerLyric"
-                    className={({ isActive }) =>
-                      `block p-2 ${
-                        isActive
-                          ? 'bg-white/20 text-white'
-                          : 'text-white/80 hover:bg-white/20 hover:text-white'
-                      }`
-                    }
-                  >
-                    Bài Hát
-                  </NavLink>
-                </li>
-                <li className="mb-2">
-                  <NavLink
                     to="/admin/suggestion"
                     className={({ isActive }) =>
                       `block p-2 ${
